@@ -6,10 +6,6 @@ pytest-gdeploy-config
     :target: https://travis-ci.org/fbalak/pytest-gdeploy-config
     :alt: See Build Status on Travis CI
 
-.. image:: https://ci.appveyor.com/api/projects/status/github/fbalak/pytest-gdeploy-config?branch=master
-    :target: https://ci.appveyor.com/project/fbalak/pytest-gdeploy-config/branch/master
-    :alt: See Build Status on AppVeyor
-
 Pytest fixture which runs given gdeploy configuration file.
 
 ----
