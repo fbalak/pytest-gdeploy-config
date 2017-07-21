@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import pytest
-
 
 def pytest_addoption(parser):
     group = parser.getgroup('gdeploy-config')
@@ -13,8 +11,3 @@ def pytest_addoption(parser):
         metavar='CONFIG_DIR',
         help='Directory where gdeploy configuration files are stored.'
     )
-
-
-@pytest.fixture
-def bar(request):
-    return request.config.option.dest_foo
