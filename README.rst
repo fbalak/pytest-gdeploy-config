@@ -2,10 +2,6 @@
 pytest-gdeploy-config
 =====================
 
-.. image:: https://travis-ci.org/fbalak/pytest-gdeploy-config.svg?branch=master
-    :target: https://travis-ci.org/fbalak/pytest-gdeploy-config
-    :alt: See Build Status on Travis CI
-
 Pytest fixture which runs given gdeploy configuration file.
 
 ----
