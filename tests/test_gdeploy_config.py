@@ -32,7 +32,7 @@ def test_help_message(testdir):
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines([
         'gdeploy-config:',
-        '*--foo=DEST_FOO*Set the value for the fixture "bar".',
+        '*--gdeploy-configuration-directory=CONFIG_DIR*',
     ])
 
 

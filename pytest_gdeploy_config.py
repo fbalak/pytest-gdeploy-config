@@ -7,13 +7,12 @@ def pytest_addoption(parser):
     group = parser.getgroup('gdeploy-config')
     group.addoption(
         '--foo',
+        '--gdeploy-configuration-directory',
         action='store',
-        dest='dest_foo',
-        default='2017',
-        help='Set the value for the fixture "bar".'
+        dest='gdeploy_config_dir',
+        metavar='CONFIG_DIR',
+        help='Directory where gdeploy configuration files are stored.'
     )
-
-    parser.addini('HELLO', 'Dummy pytest.ini setting')
 
 
 @pytest.fixture
