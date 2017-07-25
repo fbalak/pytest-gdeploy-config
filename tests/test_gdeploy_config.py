@@ -15,7 +15,8 @@ def test_help_message(testdir):
         '*--gdeploy-configuration-file=CONFIG_FILE*',
     ])
 
-def test_gdeploy_config_fixture(testdir):
+
+def test_gdeploy_config_fixture(testdir, minimal_gdeploy_config):
     """
     Make sure that``gdeploy_config`` fixture is recognized and pytest
     itself is not broken by running very simple configuration file which
@@ -26,20 +27,12 @@ def test_gdeploy_config_fixture(testdir):
         def test_foo(gdeploy_config):
             assert 1 == 1
         """))
-    # create minimal gdeploy configuration file
-    server = "localhost"
-    config = testdir.makefile(
-        ".conf",
-        "[hosts]",
-        server,
-        "",
-        "[shell]",
-        "action=execute",
-        "command=ping -c 1 {}".format(server))
     # run pytest with the following cmd args
     result = testdir.runpytest(
         '--gdeploy-configuration-file={0}'.format(
-            os.path.join(config.dirname, config.basename)),
+            os.path.join(
+                minimal_gdeploy_config.dirname,
+                minimal_gdeploy_config.basename)),
         '-v'
         )
     # fnmatch_lines does an assertion internally
