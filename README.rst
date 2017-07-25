@@ -2,31 +2,59 @@
 pytest-gdeploy-config
 =====================
 
-Pytest fixture which runs given gdeploy configuration file.
+`Pytest`_ `plugin`_ which an easy way to run particular `gdeploy configuration file`_ 
+during setup phase of a test case. This is useful when there already are some 
+configuration files that can be reused during test setup 
 
 ----
 
-This `Pytest`_ plugin was generated with `Cookiecutter`_ along with `@hackebrot`_'s `Cookiecutter-pytest-plugin`_ template.
+Initial structure od this `Pytest`_ plugin was generated with `Cookiecutter`_ 
+along with `@hackebrot`_'s `Cookiecutter-pytest-plugin`_ template.
 
 
 Features
 --------
 
-* TODO
+* The plugin provides ``gdeploy-config`` `pytest fixture`_, which allows
+  one to run one or more gdeploy configuration files during test setup or tear down.
+
+* It's compatible with both python2 and python3 (playbooks are executed via
+  running ``gdeploy-config`` in subprocess instead of using api
+  of ansible python module).
 
 
 Requirements
 ------------
 
-* TODO
+* gdeploy have to be installed for correct functioning.
+  Use version provided by packaging system of your operation system.
 
 
 Installation
 ------------
 
-You can install "pytest-gdeploy-config" via `pip`_ from `PyPI`_::
+There is no stable release yet, so the only option is to use latest
+sources from master branch.
 
-    $ pip install pytest-gdeploy-config
+Latest development version 
+~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+
+The suggested way to install from sources of current master branch is 
+via `python virtual enviroment`_::     
+
+    $ cd pytest-ansible-playbook
+    $ virtualenv .env
+    $ source .env/bin/activate
+    $ pip install -e .
+    
+Note that you can use `virtualenvwrapper`_ to simplify this workflow.
+
+
+.. TODO: uncomment the following when the 1st release is done
+.. 
+.. You can install "pytest-gdeploy-config" via `pip`_ from `PyPI`_::
+.. 
+..     $ pip install pytest-gdeploy-config
 
 
 Usage
@@ -42,7 +70,8 @@ the coverage at least stays the same before you submit a pull request.
 License
 -------
 
-Distributed under the terms of the `Apache Software License 2.0`_ license, "pytest-gdeploy-config" is free and open source software
+Distributed under the terms of the `Apache Software License 2.0`_ license, 
+"pytest-gdeploy-config" is free and open source software
 
 
 Issues
@@ -59,6 +88,11 @@ If you encounter any problems, please `file an issue`_ along with a detailed des
 .. _`cookiecutter-pytest-plugin`: https://github.com/pytest-dev/cookiecutter-pytest-plugin
 .. _`file an issue`: https://github.com/fbalak/pytest-gdeploy-config/issues
 .. _`pytest`: https://github.com/pytest-dev/pytest
+.. _`pytest fixture`: http://doc.pytest.org/en/latest/fixture.html
+.. _`plugin`: http://doc.pytest.org/en/latest/plugins.html
 .. _`tox`: https://tox.readthedocs.io/en/latest/
 .. _`pip`: https://pypi.python.org/pypi/pip/
 .. _`PyPI`: https://pypi.python.org/pypi
+.. _`python virtual enviroment`: https://virtualenv.pypa.io/en/stable/ 
+.. _`virtualenvwrapper`: https://virtualenvwrapper.readthedocs.io/en/latest/
+.. _`gdeploy configuration file`: http://gdeploy.readthedocs.io/en/latest/conf.html
