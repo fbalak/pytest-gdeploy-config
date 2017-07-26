@@ -2,6 +2,7 @@
 
 
 from __future__ import print_function
+import os
 import subprocess
 
 import pytest
@@ -19,6 +20,30 @@ def pytest_addoption(parser):
         metavar="CONFIG_FILE",
         help='gdeploy configuration file.',
     )
+    group.addoption(
+        '--configuration-directory',
+        action='store',
+        dest='configuration_directory',
+        metavar="CONFIG_DIR",
+        help='Directory where gdeploy configuration files are stored.',
+    )
+
+
+def pytest_configure(config):
+    """
+    Validate pytest-gdeploy-config options: when such option is used,
+    the given file or directory should exist.
+
+    This check makes the pytest fail immediatelly when wrong path is
+    specified, without waiting for the first test case with gdeploy_config
+    fixture to fail.
+    """
+    dir_path = config.getvalue('configuration_directory')
+    if dir_path is not None and not os.path.isdir(dir_path):
+        msg = (
+            "value of --configuration-directory option ({0}) "
+            "is not a directory").format(dir_path)
+        raise pytest.UsageError(msg)
 
 
 def get_gdeploy_cmd(gdeploy_file):
@@ -82,10 +107,12 @@ def gdeploy_config(request):
     for config_file in setup_files:
         subprocess.check_call(
             get_gdeploy_cmd(
-                config_file))
+                config_file),
+            cwd=request.config.option.configuration_directory)
     yield
     # teardown
     for config_file in teardown_files:
         subprocess.check_call(
             get_gdeploy_cmd(
-                config_file))
+                config_file),
+            cwd=request.config.option.configuration_directory)
