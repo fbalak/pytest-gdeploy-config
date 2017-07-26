@@ -1,0 +1,7 @@
+confit-gdeploy-config is a project originally created by Filip Balák
+<https://github.com/fbalak>, but there are more people that that have
+influenced this project:
+Daniel Horák <https://github.com/dahorak>
+Luboš Tříletý <https://github.com/ltrilety>
+Martin Bukatovič <https://github.com/mbukatov> - mentoring and inspiration from https://gitlab.com/mbukatov/pytest-ansible-playbook
+Martin Kudlej <https://github.com/mkudlej>
