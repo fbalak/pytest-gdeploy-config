@@ -60,10 +60,68 @@ Note that you can use `virtualenvwrapper`_ to simplify this workflow.
 Usage
 -----
 
-* TODO
+When the plugin is installed, there are available following command-line
+parameters::
+
+    py.test \
+        [--configuration-directory <path_to_directory_with_gdeploy_files>] \
+        [--gdeploy-configuration-file <name_of_gdeploy_configuration_file>]
+
+Where ``<path_to_directory_with_gdeploy_files>`` is a directory which contains
+all gdeploy configuration files that are going to be executed.
+A ``gdeploy-config`` process will be able to access the files stored there,
+since this directory is set as cwd (current working directory) of the gdeploy 
+process.
+
+The ``name_of_configuration_file`` is a `gdeploy configuration file`_ stored
+in ``<path_to_directory_with_gdeploy_files>`` or defined by absolute path.
+
+
+
+Using gdeploy config fixture
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The plugin provides a single pytest fixture called ``gdeploy_config``. To
+specify configuration files to be executed by gdeploy in the fixture, use the
+following `pytest markers`_:
+
+* ``@pytest.mark.gdeploy_config_setup('config.conf')``
+* ``@pytest.mark.gdeploy_config_teardown('config.conf')``
+
+Note that there can be listed multiple files in the marker if needed, eg.::
+
+    @pytest.mark.gdeploy_config_setup('config1.conf', 'config2.conf')
+
+Both files would be executed in the given order.
+
+Here is an example how to specify 2 files to be run during setup phase
+of a test case and one for the teardown::
+
+    @pytest.mark.gdeploy_config_setup('volume.conf', 'config2.conf')
+    @pytest.mark.gdeploy_config_teardown('teardown_gluster.conf')
+    def test_foo(gdeploy_config):
+        """
+        Some testing is done here.
+        """
+
+While using markers without ``gdeploy_config`` fixture like this is valid::
+
+    @pytest.mark.gdeploy_config_setup('volume.conf', 'config2.conf')
+    @pytest.mark.gdeploy_config_teardown('teardown_gluster.conf')
+    def test_foo():
+        """
+        Some testing is done here.
+        """
+
+no configuration file is executed that way.
+
+Also note that using a marker without any configuration file parameter or
+using the fixture without any marker is not valid and would cause an error.
+
 
 Contributing
 ------------
+
 Contributions are very welcome. Tests can be run with `tox`_, please ensure
 the coverage at least stays the same before you submit a pull request.
 
