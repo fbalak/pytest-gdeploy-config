@@ -95,3 +95,42 @@ def test_simple(testdir, minimal_gdeploy_config, marker_type):
     result.stdout.fnmatch_lines(['*::test_foo PASSED'])
     # make sure that that we get a '0' exit code for the testsuite
     assert result.ret == 0
+
+
+@pytest.mark.parametrize("marker_type", ["setup", "teardown"])
+def test_checkfile(
+        testdir, testfile_config_generator, marker_type):
+    """
+    Make sure that ``gdeploy_config`` fixture actually executes
+    given configuration file.
+    """
+    gdeploy_file, test_file_path, test_file_content = \
+        testfile_config_generator.get()
+    # create a temporary pytest test module
+    testdir.makepyfile(textwrap.dedent("""\
+        import pytest
+
+        @pytest.mark.gdeploy_config_{0}('{1}')
+        def test_foo(gdeploy_config):
+            assert 1 == 1
+
+        @pytest.mark.gdeploy_config_{0}('{1}')
+        def test_bar(gdeploy_config):
+            assert 1 == 0
+        """.format(marker_type, gdeploy_file.basename)))
+    # run pytest with the following cmd args
+    result = testdir.runpytest(
+        '--configuration-directory={0}'.format(gdeploy_file.dirname),
+        '-v',
+        )
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines([
+        '*::test_foo PASSED',
+        '*::test_bar FAILED',
+        ])
+    # check that test_file has been created
+    with open(test_file_path, 'r') as test_file_object:
+        content = test_file_object.read()
+        assert content == test_file_content + "\n"
+    # make sure that that we get a '1' exit code for the testsuite
+    assert result.ret == 1
