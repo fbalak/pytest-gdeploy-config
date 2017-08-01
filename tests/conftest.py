@@ -69,3 +69,18 @@ def testfile_config_generator(testdir):
             return config_file, test_file_path, test_file_content
 
     return ConfigGenerator()
+
+
+@pytest.fixture
+def broken_gdeploy_config(testdir):
+    """
+    Create minimal gdeploy configuration file with an error in it, so that the
+    ``gdeploy_config`` would immediatelly fail when trying to execute it.
+    """
+    config = testdir.makefile(
+        "[hosts]",
+        "localhost",
+        "",
+        "[nothing]",  # here is the problem inserted on purpose
+        )
+    return config
