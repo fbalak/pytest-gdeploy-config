@@ -282,3 +282,35 @@ def test_empty_mark(testdir, minimal_gdeploy_config, marker_type):
         ])
     # make sure that that we get a '1' exit code for the testsuite
     assert result.ret == 1
+
+
+@pytest.mark.parametrize("marker_type", ["setup", "teardown"])
+def test_gdeploy_error(testdir, broken_gdeploy_config, marker_type):
+    """
+    Make sure that test cases ends in ERROR state when ``gdeploy_config``
+    fixture fails (because of ansible reported error).
+    """
+    # create a temporary pytest test module
+    testdir.makepyfile(textwrap.dedent("""\
+        import pytest
+
+        @pytest.mark.gdeploy_config_{0}('{1}')
+        def test_foo(gdeploy_config):
+            assert 1 == 1
+
+        @pytest.mark.gdeploy_config_{0}('{1}')
+        def test_bar(gdeploy_config):
+            assert 1 == 0
+        """.format(marker_type, broken_gdeploy_config.basename)))
+    # run pytest with the following cmd args
+    result = testdir.runpytest(
+        '--configuration-directory={0}'.format(broken_gdeploy_config.dirname),
+        '-v',
+        )
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines([
+        '*::test_foo ERROR',
+        '*::test_bar ERROR',
+        ])
+    # make sure that that we get a '1' exit code for the testsuite
+    assert result.ret == 1
