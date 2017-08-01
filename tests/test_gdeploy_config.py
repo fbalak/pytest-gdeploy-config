@@ -178,7 +178,8 @@ def test_two_checkfile(
 def test_teardown_checkfile(testdir, testfile_config_generator):
     """
     Make sure that ``gdeploy_config`` fixture actually executes
-    setup config_file during setup, and then teardown config_file during teardown.
+    setup config_file during setup, and then teardown config_file during
+    teardown.
 
     This is done by making the check in the temporary pytest module
     (see testdir.makepyfile call), which makes sure that:
@@ -228,3 +229,28 @@ def test_teardown_checkfile(testdir, testfile_config_generator):
             assert content == exp_content + "\n"
     # make sure that that we get a '0' exit code for the testsuite
     assert result.ret == 0
+
+
+def test_missing_mark(testdir, minimal_gdeploy_config):
+    """
+    Make sure that test cases ends in ERROR state when a test case is not
+    marked with ``@pytest.mark.gdeploy_config_setup('config_file.conf')``.
+    """
+    # create a temporary pytest test module
+    testdir.makepyfile(textwrap.dedent("""\
+        import pytest
+
+        def test_foo(gdeploy_config):
+            assert 1 == 1
+        """))
+    # run pytest with the following cmd args
+    result = testdir.runpytest(
+        '--configuration-directory={0}'.format(minimal_gdeploy_config.dirname),
+        '-v',
+        )
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines([
+        '*::test_foo ERROR',
+        ])
+    # make sure that that we get a '1' exit code for the testsuite
+    assert result.ret == 1
