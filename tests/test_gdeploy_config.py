@@ -54,9 +54,6 @@ def test_invalid_options(
     # it doesn't check for configuration file related error message when
     # issue with directory is detected as well
 
-    # when path to configuration file is relative, but the path to the
-    # directory is not specified
-
     # fnmatch_lines does an assertion internally
     result.stderr.fnmatch_lines(match_lines)
 
@@ -67,9 +64,7 @@ def test_invalid_options(
         # so there should be no error
         assert result.ret == 5
     elif dir_value is not None and dir_error is None:
-        # case when only the --configuration-directory is specified
-        # correctly, without using --gdeploy-configuration-file option,
-        # so again, no error
+        # case when the --configuration-directory is specified, no error
         assert result.ret == 5
     else:
         assert result.ret == 4
