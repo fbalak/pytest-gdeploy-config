@@ -134,3 +134,42 @@ def test_checkfile(
         assert content == test_file_content + "\n"
     # make sure that that we get a '1' exit code for the testsuite
     assert result.ret == 1
+
+
+@pytest.mark.parametrize("marker_type", ["setup", "teardown"])
+def test_two_checkfile(
+        testdir, testfile_config_generator, marker_type):
+    """
+    Make sure that ``gdeploy_config`` fixture actually executes
+    both config files specified in the marker decorator.
+    """
+    config_file_1, filepath_1, content_1 = testfile_config_generator.get()
+    config_file_2, filepath_2, content_2 = testfile_config_generator.get()
+    # create a temporary pytest test module
+    testdir.makepyfile(textwrap.dedent("""\
+        import pytest
+
+        @pytest.mark.gdeploy_config_{0}('{1}', '{2}')
+        def test_1(gdeploy_config):
+            assert 1 == 1
+        """.format(
+            marker_type, config_file_1.basename, config_file_2.basename)))
+    # check assumption of this test case, if this fails, we need to rewrite
+    # this test case so that both config_file files ends in the same directory
+    assert config_file_1.dirname == config_file_2.dirname
+    # run pytest with the following cmd args
+    result = testdir.runpytest(
+        '--configuration-directory={0}'.format(config_file_1.dirname),
+        '-v',
+        )
+    # fnmatch_lines does an assertion internally
+    result.stdout.fnmatch_lines(['*::test_1 PASSED'])
+    # check that test_file has been created
+    for file_path, exp_content in zip(
+            (filepath_1, filepath_2),
+            (content_1, content_2)):
+        with open(file_path, 'r') as test_file_object:
+            content = test_file_object.read()
+            assert content == exp_content + "\n"
+    # make sure that that we get a '0' exit code for the testsuite
+    assert result.ret == 0
