@@ -14,7 +14,6 @@ def test_help_message(testdir):
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines([
         'gdeploy-config:',
-        '*--gdeploy-configuration-file=CONFIG_FILE*',
         '*--configuration-directory=CONFIG_DIR*',
     ])
 
@@ -24,14 +23,8 @@ def test_help_message(testdir):
     ("/dev", None),
     (None, None),
     ])
-@pytest.mark.parametrize("file_value, file_error", [
-    ("/none", "is not accessible"),
-    ("/dev/zero", None),
-    ("zero", None),
-    (None, None),
-    ])
 def test_invalid_options(
-        testdir, dir_value, dir_error, file_value, file_error):
+        testdir, dir_value, dir_error):
     """
     Make sure that pytest reports an ERROR immediatelly when invalid
     options are specified.
@@ -47,8 +40,6 @@ def test_invalid_options(
     args = []
     if dir_value is not None:
         args.append('--configuration-directory={0}'.format(dir_value))
-    if file_value is not None:
-        args.append('--gdeploy-configuration-file={0}'.format(file_value))
     args.append('-v')
 
     # run pytest with the following cmd args
@@ -62,23 +53,20 @@ def test_invalid_options(
     # immediatelly without going on to check configuration file, so
     # it doesn't check for configuration file related error message when
     # issue with directory is detected as well
-    if file_error is not None and dir_error is None:
-        match_lines.append('ERROR:*value of *{0}'.format(file_error))
+
     # when path to configuration file is relative, but the path to the
     # directory is not specified
-    if file_value == "zero" and dir_value is None:
-        match_lines.append('ERROR:*value of *{0}'.format("is not accessible"))
 
     # fnmatch_lines does an assertion internally
     result.stderr.fnmatch_lines(match_lines)
 
     # make sure that expected error code is given
-    if dir_value is None and file_value is None:
+    if dir_value is None:
         # this is a case without any gdeploy-config options, equiv. of
         # running ``py.test -v`` in a directory without any tests,
         # so there should be no error
         assert result.ret == 5
-    elif dir_value is not None and dir_error is None and file_value is None:
+    elif dir_value is not None and dir_error is None:
         # case when only the --configuration-directory is specified
         # correctly, without using --gdeploy-configuration-file option,
         # so again, no error
@@ -97,14 +85,13 @@ def test_simple(testdir, minimal_gdeploy_config, marker_type):
     # create a temporary pytest test module
     testdir.makepyfile(textwrap.dedent("""\
         import pytest
-        @pytest.mark.ansible_playbook_{0}('{1}')
+
+        @pytest.mark.gdeploy_config_{0}('{1}')
         def test_foo(gdeploy_config):
             assert 1 == 1
         """.format(marker_type, minimal_gdeploy_config.basename)))
     # run pytest with the following cmd args
     result = testdir.runpytest(
-        '--gdeploy-configuration-file={0}'.format(
-            minimal_gdeploy_config.basename),
         '--configuration-directory={0}'.format(
             minimal_gdeploy_config.dirname),
         '-v'

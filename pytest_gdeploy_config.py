@@ -14,13 +14,6 @@ def pytest_addoption(parser):
     """
     group = parser.getgroup('gdeploy-config')
     group.addoption(
-        '--gdeploy-configuration-file',
-        action='store',
-        dest='gdeploy_config_file',
-        metavar="CONFIG_FILE",
-        help='gdeploy configuration file.',
-    )
-    group.addoption(
         '--configuration-directory',
         action='store',
         dest='configuration_directory',
@@ -74,15 +67,13 @@ def get_empty_marker_error(marker_type):
 @pytest.fixture
 def gdeploy_config(request):
     """
-    Pytest fixture which runs given gdeploy configuration file.
+    Pytest fixture which runs given gdeploy configuration file. When gdeploy
+    returns nonzero return code, the test case which uses this fixture is not
+    executed and ends in ``ERROR`` state.
     """
-    gdeploy_command = get_gdeploy_cmd(
-        request.config.option.gdeploy_config_file)
-    subprocess.check_call(gdeploy_command)
-
-    setup_marker = request.node.get_marker('ansible_playbook_setup')
+    setup_marker = request.node.get_marker('gdeploy_config_setup')
     setup_files = []
-    teardown_marker = request.node.get_marker('ansible_playbook_teardown')
+    teardown_marker = request.node.get_marker('gdeploy_config_teardown')
     teardown_files = []
 
     if setup_marker is None and teardown_marker is None:
