@@ -78,9 +78,7 @@ def broken_gdeploy_config(testdir):
     ``gdeploy_config`` would immediatelly fail when trying to execute it.
     """
     config = testdir.makefile(
-        "[hosts]",
-        "localhost",
-        "",
-        "[nothing]",  # here is the problem inserted on purpose
+        ".conf",
+        "{",  # here is the problem inserted on purpose
         )
     return config

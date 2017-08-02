@@ -309,8 +309,8 @@ def test_gdeploy_error(testdir, broken_gdeploy_config, marker_type):
         )
     # fnmatch_lines does an assertion internally
     result.stdout.fnmatch_lines([
-        '*::test_foo ERROR',
-        '*::test_bar ERROR',
+        'Sorry! Looks like the format of configuration file *\
+is not something we could read! '
         ])
     # make sure that that we get a '1' exit code for the testsuite
     assert result.ret == 1
